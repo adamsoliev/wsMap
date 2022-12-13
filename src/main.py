@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
 
 
 class CustomFormatter(logging.Formatter):
@@ -32,12 +33,20 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-logger = logging.getLogger("SiteMap")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-ch.setFormatter(CustomFormatter())
-logger.addHandler(ch)
+def get_parent_dir():
+    logPath = os.path.abspath('..')
+    return logPath
+
+
+def get_filename_base():
+    filename = __file__
+    filename_base = os.path.splitext(os.path.basename(filename))[0]
+    return filename_base
+
+
+def ensure_exists(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 def is_resource(url):
@@ -56,6 +65,24 @@ def is_deep_link(base_url, url):
         ".")[1]  # ideally middle element
 
     return base_netloc in parsed_nerloc
+
+
+logger = logging.getLogger("SiteMap")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(CustomFormatter())
+logger.addHandler(ch)
+
+parent_dir = get_parent_dir()
+log_path = f"{parent_dir}/logs/"
+ensure_exists(log_path)
+
+filename = get_filename_base()
+
+fh = logging.FileHandler(f"{log_path}/{filename}.log")
+fh.setFormatter(CustomFormatter())
+logger.addHandler(fh)
 
 
 _graph = {}
@@ -124,10 +151,10 @@ def visualize_graph(graph):
 
 def main():
 
-    url = 'https://twitter.com'
+    url = 'https://cmegroup.com'
     extracted_urls = extract_urls(url, url)
     sorted(extracted_urls, key=len)
-    print(*extracted_urls, sep='\n')
+    print(*extracted_urls, sep='\n')  # print each of list items in a new line
 
     visualize_graph(_graph)
 
