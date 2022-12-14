@@ -1,5 +1,5 @@
 ## wsMap
-This is my attempt to visualize websites
+Visualize websites
 
 #### Example
 * https://twitter.com ![Image](/assets/Figure_1.png)
